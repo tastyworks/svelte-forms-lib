@@ -196,6 +196,27 @@ describe('createForm', () => {
         expect($errors.ys[0]).toBe('');
         expect($errors.ys[1]).toBe(typeError);
       });
+
+      it('handles null guard when schema is nested', async () => {
+        const initialValues = {};
+        const barRequired = 'bar';
+        const validationSchema = yup.object().shape({
+          foo: yup.string().required(),
+          nested: yup
+            .object()
+            .shape({
+              foo: yup
+                .object()
+                .shape({bar: yup.string().required(barRequired)}),
+            }),
+        });
+
+        const instance = getInstance({initialValues, validationSchema});
+        await instance.handleSubmit();
+        const $errors = await subscribeOnce(instance.errors);
+
+        expect($errors.nested.foo.bar).toBe(barRequired);
+      });
     });
   });
 
