@@ -202,15 +202,10 @@ describe('createForm', () => {
         const barRequired = 'bar';
         const validationSchema = yup.object().shape({
           foo: yup.string().required(),
-          nested: yup
-            .object()
-            .shape({
-              foo: yup
-                .object()
-                .shape({bar: yup.string().required(barRequired)}),
-            }),
+          nested: yup.object().shape({
+            foo: yup.object().shape({bar: yup.string().required(barRequired)}),
+          }),
         });
-
         const instance = getInstance({initialValues, validationSchema});
         await instance.handleSubmit();
         const $errors = await subscribeOnce(instance.errors);
